@@ -38,5 +38,6 @@ BANDS = [
     "u_component_of_wind_10m",
     "v_component_of_wind_10m",
 ]
-col = ee.ImageCollection("ECMWF/ERA5_LAND/HOURLY").select(BANDS)
-ee_export_batch(col, region, date_beg, date_end, by=by, prefix=f"{Region}_ERA5L")
+img = ee.ImageCollection("ECMWF/ERA5_LAND/HOURLY").select(BANDS).limit(1).first()
+print(img)
+# ee_export_batch(col, region, date_beg, date_end, by=by, prefix=f"{Region}_ERA5L")
