@@ -1,7 +1,7 @@
 # downloading speed: 1min per year
 # %%
 import sys
-sys.path.insert(0, "./Project_Forecast/")
+sys.path.insert(0, "./ee-export/")
 
 from ee_export import ee_export_batch
 from ee_export_weeks import ee_export_weeks
@@ -19,8 +19,8 @@ region = ee.Geometry.Rectangle(
 )  # 湖北
 Region = "Hubei"
 
-date_beg = "2025"
-date_end = "2026"
+date_beg = "2015"
+date_end = "2025"
 by = "year"
 
 # %%
@@ -44,11 +44,20 @@ BANDS = [
     "surface_pressure",
 ]
 col = ee.ImageCollection("ECMWF/ERA5_LAND/HOURLY").select(BANDS)
-# ee_export_batch(col, region, date_beg, date_end, by=by, prefix=f"{Region}_ERA5L")
+ee_export_batch(
+    col,
+    region,
+    date_beg,
+    date_end,
+    by=by,
+    prefix=f"{Region}_ERA5L",
+    overwrite=True,
+)
 
 # week = get_week() # date_beg, date_end, week
-
-ee_export_weeks(
-    col, region, date="2026-07-21", include_current_week=True,
-    fout=f"OUTPUT/{Region}_ERA5L.nc",
-)
+# ee_export_weeks(
+#     col, region, 
+#     year = 2026, weeks = range(26, 28),
+#     # date="2026-07-21", include_current_week=True,
+#     prefix=f"{Region}_ERA5L", outdir="OUTPUT", overwrite=False
+# )
