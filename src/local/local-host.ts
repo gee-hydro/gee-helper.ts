@@ -5,8 +5,9 @@ import * as fs from 'node:fs';
 import { createRequire } from 'node:module';
 import * as path from 'node:path';
 import * as vm from 'node:vm';
-import { ensureReady, getInfo } from './auth';
-import { ee } from './ee';
+import { ensureReady, getInfo } from '../auth';
+import { ee } from '../ee';
+import { mergePackagePaths, withGeePackageRequire } from './gee-require';
 
 const ORIG_MAP_CTOR: MapConstructor | undefined = globalThis.Map;
 
@@ -205,9 +206,19 @@ export function setupLocalHost(opts: LocalHostOptions = {}): LocalHost {
 
 type GlobalKey = 'require' | 'module' | 'exports' | '__filename' | '__dirname';
 
+export interface ScriptContextOptions {
+  /** GEE JS 包根目录（可多个）；默认 packages + config + $GEE_JS_PATH */
+  packagePaths?: string[];
+}
+
 /** 注入 Node 脚本全局（require/module/__dirname），执行后还原。 */
-export function runInScriptContext(code: string, filename: string): void {
+export function runInScriptContext(
+  code: string,
+  filename: string,
+  opts: ScriptContextOptions = {},
+): void {
   const absPath = path.resolve(filename);
+  const packagePaths = mergePackagePaths(opts.packagePaths);
   const g = globalThis as Record<string, unknown>;
   const keys: GlobalKey[] = ['require', 'module', 'exports', '__filename', '__dirname'];
   const prev: Partial<Record<GlobalKey, unknown>> = {};
@@ -221,8 +232,9 @@ export function runInScriptContext(code: string, filename: string): void {
   g.__dirname = path.dirname(absPath);
 
   try {
-    vm.runInThisContext(code, { filename: absPath });
-    // 若脚本写了 module.exports，同步回 exports
+    withGeePackageRequire(packagePaths, () => {
+      vm.runInThisContext(code, { filename: absPath });
+    });
     g.exports = mod.exports;
   } finally {
     for (const k of keys) {
@@ -232,7 +244,7 @@ export function runInScriptContext(code: string, filename: string): void {
   }
 }
 
-export interface RunScriptOptions extends LocalHostOptions {
+export interface RunScriptOptions extends LocalHostOptions, ScriptContextOptions {
   /** 跳过 ensureReady（批量跑时外层只鉴权一次） */
   ready?: boolean;
 }
@@ -240,7 +252,7 @@ export interface RunScriptOptions extends LocalHostOptions {
 async function runScriptBody(absPath: string, code: string, opts: RunScriptOptions): Promise<LocalHost> {
   const host = setupLocalHost(opts);
   if (!opts.ready) await ensureReady();
-  runInScriptContext(code, absPath);
+  runInScriptContext(code, absPath, opts);
   await Promise.all(host.pendingPrints.map((p) => p.catch(() => {})));
   return host;
 }
@@ -253,7 +265,7 @@ export async function runScript(scriptPath: string, opts: RunScriptOptions = {})
 /** 多脚本顺序执行，ensureReady 仅一次。 */
 export async function runScripts(
   scriptPaths: string[],
-  opts: LocalHostOptions = {},
+  opts: RunScriptOptions = {},
 ): Promise<LocalHost[]> {
   await ensureReady();
   const out: LocalHost[] = [];
@@ -266,8 +278,7 @@ export async function runScripts(
 export async function runCode(code: string, opts: RunScriptOptions = {}): Promise<LocalHost> {
   const host = setupLocalHost(opts);
   if (!opts.ready) await ensureReady();
-  // createRequire 需要真实路径锚点；inline 锚定 cwd
-  runInScriptContext(code, path.join(process.cwd(), '.<gee-inline>.js'));
+  runInScriptContext(code, path.join(process.cwd(), '.<gee-inline>.js'), opts);
   await Promise.all(host.pendingPrints.map((p) => p.catch(() => {})));
   return host;
 }

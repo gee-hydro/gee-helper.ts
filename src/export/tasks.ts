@@ -5,11 +5,11 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ensureReady } from './auth';
+import { ensureReady } from '../auth';
 import { validateCacheBounds, type CacheBounds } from './bounds';
-import { ee } from './ee';
+import { ee } from '../ee';
 import { frameCollection } from './frame-collection';
-import type { GeeDailyReduction, GeeTemporal } from './types';
+import type { GeeDailyReduction, GeeTemporal } from '../types';
 import {
   dailyBuckets,
   estimateFrameCount,
@@ -19,7 +19,7 @@ import {
   regionGeometry,
   type Bucket,
   type BuildFrameFn,
-} from './export-batches';
+} from './batches';
 
 export type TaskDestination = 'drive' | 'gcs';
 

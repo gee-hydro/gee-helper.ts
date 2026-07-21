@@ -4,10 +4,10 @@
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ensureReady } from './auth';
+import { ensureReady } from '../auth';
 import { validateCacheBounds, type CacheBounds } from './bounds';
 import { frameCollection } from './frame-collection';
-import type { GeeDailyReduction, GeeTemporal } from './types';
+import type { GeeDailyReduction, GeeTemporal } from '../types';
 
 export type Bucket = 'day' | 'week' | 'month' | 'range';
 

@@ -4,7 +4,7 @@
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import * as vm from 'node:vm';
-import { runInScriptContext, setupLocalHost } from '../src/local-host';
+import { runInScriptContext, setupLocalHost } from '../src/local/local-host';
 
 beforeEach(() => {
   // 清除宿主全局，避免上一次测试污染

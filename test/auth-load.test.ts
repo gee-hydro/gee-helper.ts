@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { test } from 'node:test';
 import vm from 'node:vm';
 
-const modulePath = resolve(__dirname, '../src/auth.js');
+const modulePath = resolve(__dirname, '../src/auth/auth.js');
 const moduleSource = readFileSync(modulePath, 'utf8');
 const offlineHome = '/offline-home';
 const credentialsPath = `${offlineHome}/.config/earthengine/credentials`;

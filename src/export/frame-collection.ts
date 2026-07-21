@@ -2,8 +2,8 @@
  * 导出用帧集合构造（daily_mean / native）。
  * 依赖宿主全局 ee；调用前须 ensureReady() 或已安装 globalThis.ee。
  */
-import { ee } from './ee';
-import type { GeeDailyReduction, GeeTemporal } from './types';
+import { ee } from '../ee';
+import type { GeeDailyReduction, GeeTemporal } from '../types';
 
 function toEeDateInput(timeIso: string): string {
   if (/^\d{4}-\d{2}-\d{2}$/.test(timeIso)) return timeIso;

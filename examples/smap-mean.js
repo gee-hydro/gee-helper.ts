@@ -1,7 +1,7 @@
 /**
  * SMAP 表层土壤水分：武汉小区域日均值。
  *
- *   node bin/gee-helper run examples/smap-mean.js
+ *   node bin/ee run examples/smap-mean.js
  */
 var region = ee.Geometry.Rectangle([114.2, 30.4, 114.6, 30.7]);
 var img = ee.ImageCollection('NASA/SMAP/SPL4SMGP/008')

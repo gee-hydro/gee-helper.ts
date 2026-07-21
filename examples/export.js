@@ -7,7 +7,7 @@
 'use strict';
 
 const path = require('node:path');
-const { exportBatches } = require('../dist/export-batches');
+const { exportBatches } = require('../dist/export/batches');
 
 const dryRun = process.env.DRY_RUN === '1';
 const outdir = path.resolve(__dirname, '../cache/examples/smap');

@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "gee-helper": "bin/gee-helper"
+    "ee": "bin/ee"
   },
   "exports": {
     ".": {
@@ -14,17 +14,18 @@
       "default": "./dist/index.js"
     },
     "./auth": {
-      "types": "./dist/auth.d.ts",
-      "default": "./dist/auth.js"
+      "types": "./dist/auth/auth.d.ts",
+      "default": "./dist/auth/auth.js"
     },
     "./export": {
-      "types": "./dist/export-batches.d.ts",
-      "default": "./dist/export-batches.js"
+      "types": "./dist/export/batches.d.ts",
+      "default": "./dist/export/batches.js"
     }
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "bin"
   ],
   "scripts": {
     "build": "tsc",

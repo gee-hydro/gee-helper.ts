@@ -1,8 +1,9 @@
 export { ee } from './ee';
 export { ensureReady, getInfo } from './auth';
-export { validateCacheBounds, type CacheBounds } from './bounds';
 export type { GeeDailyReduction, GeeTemporal } from './types';
-export { frameCollection } from './frame-collection';
+
+export { validateCacheBounds, type CacheBounds } from './export/bounds';
+export { frameCollection } from './export/frame-collection';
 export {
   dailyBuckets,
   estimateFrameCount,
@@ -16,7 +17,7 @@ export {
   type BuildFrameFn,
   type BuildFrameParams,
   type ExportBatchesOptions,
-} from './export-batches';
+} from './export/batches';
 export {
   cancelTasks,
   getTaskStatuses,
@@ -32,7 +33,39 @@ export {
   type TaskDestination,
   type TaskRecord,
   type TaskStatusView,
-} from './export-tasks';
+} from './export/tasks';
+
+export {
+  configPath,
+  getConfigValue,
+  loadConfig,
+  loadMergedConfig,
+  packagesFromConfig,
+  projectConfigPath,
+  saveConfig,
+  userConfigPath,
+  type ConfigScope,
+  type GeeHelperConfig,
+} from './local/config';
+export {
+  DEFAULT_PACKAGES_DIR,
+  defaultPackagePaths,
+  geeIdToRelPath,
+  isNodeModuleId,
+  mergePackagePaths,
+  resolveGeePackage,
+  withGeePackageRequire,
+} from './local/gee-require';
+export {
+  addPackage,
+  gerritUrl,
+  packageDest,
+  parseUserPkg,
+  primaryPackagesRoot,
+  type AddPackageOptions,
+  type AddPackageResult,
+  type UserPkg,
+} from './local/pkg-add';
 export {
   runCode,
   runInScriptContext,
@@ -43,5 +76,8 @@ export {
   type LocalHost,
   type LocalHostOptions,
   type RunScriptOptions,
+  type ScriptContextOptions,
   type TaskSpec,
-} from './local-host';
+} from './local/local-host';
+
+export { run as runCli } from './cli';

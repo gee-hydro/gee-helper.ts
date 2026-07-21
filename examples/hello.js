@@ -1,7 +1,7 @@
 /**
  * Code Editor 风格最小示例。
  *
- *   node bin/gee-helper run examples/hello.js
+ *   node bin/ee run examples/hello.js
  */
 print('hello gee-helper');
 print(ee.Number(1).add(41));

@@ -18,27 +18,37 @@ npm test
 npm run test:coverage   # text + coverage/lcov.info + HTML
 ```
 
-## 3 CLI
+## 3 示例
+
+见 [`examples/`](examples/README.md)。
+
+```bash
+node bin/ee run examples/hello.js
+node bin/ee run examples/with-require.js examples/require-smap.js  # require + 多脚本只鉴权一次
+node examples/export.js   # 库 API 本地下载
+```
+
+## 4 CLI
 
 ```bash
 # 导出到本地
-npx gee-helper submit --destination local \
+npx ee submit --destination local \
   --collection NASA/SMAP/SPL4SMGP/008 --band sm_surface --scale 9000 \
-  --temporal daily_mean --bounds 114.2,30.4,114.6,30.7 \
+  --temporal daily_mean --bounds 108.5,29.0,116.2,33.3 \
   --start 2024-07-01 --end 2024-07-02 --outdir ./cache/gee-batches
 
 # 导出到 Drive
-npx gee-helper submit --destination drive --folder gee-exports \
+npx ee submit --destination drive --folder gee-exports \
   --collection ... --band ... --scale ... --temporal daily_mean \
   --bounds ... --start ... --end ...
-npx gee-helper status --job job_<id>
+npx ee status --job job_<id>
 
-# 本地运行 Code Editor 风格 JS
-npx gee-helper run script.js
-npx gee-helper run --repl
+# 本地运行 Code Editor 风格 JS（可多脚本；支持 require）
+npx ee run script.js [more.js ...]
+npx ee run --repl
 ```
 
-## 4 库
+## 5 库
 
 ```ts
 import {

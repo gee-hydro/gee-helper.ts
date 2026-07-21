@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   dailyBuckets, nativeBuckets, estimateFrameCount, normalizeFrameImage,
-} from '../src/export-batches';
+} from '../src/export/batches';
 
 // collection / image 归一化
 
