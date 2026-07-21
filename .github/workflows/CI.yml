@@ -22,7 +22,9 @@ jobs:
           name: coverage
           path: coverage/
           if-no-files-found: ignore
-      - name: Upload coverage reports to Codecov
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/lcov.info
+          fail_ci_if_error: false

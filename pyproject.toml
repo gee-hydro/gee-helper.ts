@@ -1,0 +1,9 @@
+[project]
+name = "gee-helper"
+version = "0.1.0"
+description = "Run GEE in Local"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "xee>=0.1.2",
+]

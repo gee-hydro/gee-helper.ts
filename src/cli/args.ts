@@ -45,32 +45,44 @@ export interface Cli {
   addSpecs: string[];
 }
 
-export const HELP = `用法: ee <command> [options]
+export const HELP = `
+用法: ee <command> [options]
 
-命令:
-  submit | status | list | jobs | cancel | run | add | config | help
+命令
+  submit              提交导出任务
+  status              查询任务状态
+  list                列出近期 GEE 操作
+  jobs                列出本地 job 记录
+  cancel              取消任务
+  run                 本地运行 GEE JS
+  add                 安装 GEE 脚本包
+  config              读写配置
+  help, -h            显示本帮助
 
-导出 submit：
-  --destination local|drive|gcs
-  --collection --band --scale --temporal daily_mean|native|forecast
-  --bounds W,S,E,N --start --end
-  --bucket auto|day|week|month|range --reduction mean|sum --step-hours
-  local: --outdir --concurrency
-  drive/gcs: --folder --gcs-bucket --prefix --max-pixels --job-dir
-  --dry-run --user-script
+导出  ee submit
+  必填  --collection --band --scale --temporal --bounds --start --end
+  可选  --destination local|drive|gcs   (默认 drive)
+        --bucket auto|day|week|month|range
+        --reduction mean|sum   --step-hours <n>
+        --crs --prefix --max-pixels --user-script --dry-run
+  local --outdir <dir>  --concurrency <1-16>
+  drive --folder <name>  --job-dir <dir>
+  gcs   --gcs-bucket <name>  --folder <prefix>
 
-status/cancel: --job <id> | --task id1,id2
-list: --limit N
+查询  ee status|cancel --job <id> | --task id1,id2
+      ee list [--limit N]    ee jobs [--job-dir <dir>]
 
-本地运行：
-  ee run script.js [more.js ...] | --repl
-  ee run --package-path ./packages script.js
+运行  ee run <script.js> [more.js ...]
+      ee run --repl
+      ee run --package-path <dir> script.js
 
-GEE JS 包（require 须带 .js）：
-  ee add <user>/<pkg>
-  ee config set packages ./packages
-  默认 ./packages；$GEE_JS_PATH / --package-path / config
-`;
+包管理  ee add <user>/<pkg>
+        ee config show|get|set|path
+        ee config set packages <dir> [--user|--project]
+
+包路径优先级  --package-path > $GEE_JS_PATH > config > ./packages
+require 须带 .js 后缀（Code Editor 语法）
+`.trimStart();
 
 const CMDS = new Set<string>([
   'submit', 'status', 'list', 'jobs', 'cancel', 'run', 'add', 'config', 'help', '-h', '--help',

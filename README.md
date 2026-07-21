@@ -1,61 +1,114 @@
-<h1>@gee-hydro/gee-helper</h1>
+# @gee-hydro/gee-helper
 
 [![CI](https://github.com/gee-hydro/gee-helper.ts/actions/workflows/CI.yml/badge.svg)](https://github.com/gee-hydro/gee-helper.ts/actions/workflows/CI.yml)
 [![Codecov](https://codecov.io/gh/gee-hydro/gee-helper.ts/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gee-hydro/gee-helper.ts/tree/main)
 
-GEE 鉴权、批量导出、Code Editor 风格 JS 本地运行。
+GEE 鉴权、批量导出、Code Editor 风格 JS 本地运行与 GEE 脚本包管理。
 
-## 1 安装
+CLI 入口：`bin/ee`（`npx ee` / `node bin/ee`）。
+
+## 安装
 
 ```bash
 npm install && npm run build
 ```
 
-## 2 测试
+凭证（二选一，优先级 private key 优先）：
+
+- `~/.config/earthengine/.private-key.json`
+- `earthengine authenticate`（OAuth）
+
+## CLI
 
 ```bash
-npm test
-npm run test:coverage   # text + coverage/lcov.info + HTML
+node bin/ee help
 ```
 
-## 3 示例
-
-见 [`examples/`](examples/README.md)。
+### 导出
 
 ```bash
-node bin/ee run examples/hello.js
-node bin/ee run examples/with-require.js examples/require-smap.js  # require + 多脚本只鉴权一次
-node examples/export.js   # 库 API 本地下载
-```
-
-## 4 CLI
-
-```bash
-# 导出到本地
-npx ee submit --destination local \
+# 本地 GeoTIFF
+node bin/ee submit --destination local \
   --collection NASA/SMAP/SPL4SMGP/008 --band sm_surface --scale 9000 \
   --temporal daily_mean --bounds 108.5,29.0,116.2,33.3 \
   --start 2024-07-01 --end 2024-07-02 --outdir ./cache/gee-batches
 
-# 导出到 Drive
-npx ee submit --destination drive --folder gee-exports \
-  --collection ... --band ... --scale ... --temporal daily_mean \
+# Drive / GCS
+node bin/ee submit --destination drive --folder gee-exports \
+  --collection ... --band ... --scale 9000 --temporal daily_mean \
   --bounds ... --start ... --end ...
-npx ee status --job job_<id>
-
-# 本地运行 Code Editor 风格 JS（可多脚本；支持 require）
-npx ee run script.js [more.js ...]
-npx ee run --repl
+node bin/ee status --job job_<id>
+node bin/ee cancel --job job_<id>
+node bin/ee list --limit 20
+node bin/ee jobs
 ```
 
-## 5 库
+必填：`--collection --band --scale --temporal --bounds --start --end`  
+可选：`--bucket auto|day|week|month|range`、`--reduction`、`--step-hours`、`--dry-run` 等。
+
+时间区间为**闭区间**；`temporal=native` 时须正 `--step-hours`。
+
+### 本地运行
+
+```bash
+node bin/ee run script.js [more.js ...]   # 多脚本只鉴权一次
+node bin/ee run --repl
+node bin/ee run --package-path ./packages script.js
+```
+
+注入 `ee` / `print` / `Map` / `Export` / `Chart`，以及 Code Editor 风格 `require`（路径须带 `.js`）。
+
+### 包管理
+
+```bash
+node bin/ee add user/pkg                  # → packages/users/user/pkg
+node bin/ee config show
+node bin/ee config set packages ./packages
+```
+
+包路径优先级：`--package-path` > `$GEE_JS_PATH` > config > `./packages`  
+`require('users/x/y:mod.js')` → `packages/users/x/y/mod.js`
+
+## 库 API
 
 ```ts
 import {
   ensureReady, getInfo, ee,
   exportBatches, submitExportTasks,
   runScript, setupLocalHost,
+  addPackage, loadMergedConfig,
 } from '@gee-hydro/gee-helper';
 ```
 
-凭证：`~/.config/earthengine/.private-key.json` 或 `earthengine authenticate`。
+子路径：`@gee-hydro/gee-helper/auth`、`@gee-hydro/gee-helper/export`。
+
+## 示例
+
+见 [`examples/`](examples/README.md)。
+
+```bash
+node bin/ee run examples/hello.js
+node bin/ee run examples/with-require.js examples/require-smap.js
+node examples/export.js          # 库 API 本地下载
+./examples/RunALL.sh             # DRY_RUN=1 可只 dry-run
+```
+
+## 测试
+
+```bash
+npm test
+npm run test:coverage   # text + coverage/lcov.info
+```
+
+## 目录
+
+```
+src/
+  ee.js auth.js       唯一 EE 实例；鉴权
+  export/             批量导出（local / Drive / GCS）
+  local/              本地宿主、require、config、add
+  cli/                CLI（按命令懒加载，help 不拉 EE）
+  index.ts            公共 API
+packages/             GEE JS 包根
+examples/ test/
+```
