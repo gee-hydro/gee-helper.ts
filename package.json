@@ -14,8 +14,8 @@
       "default": "./dist/index.js"
     },
     "./auth": {
-      "types": "./dist/auth/auth.d.ts",
-      "default": "./dist/auth/auth.js"
+      "types": "./dist/auth.d.ts",
+      "default": "./dist/auth.js"
     },
     "./export": {
       "types": "./dist/export/batches.d.ts",

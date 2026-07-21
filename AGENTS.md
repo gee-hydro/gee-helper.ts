@@ -6,8 +6,9 @@
 
 - GEE service-account / OAuth 鉴权
 - 本地 GeoTIFF、Google Drive、GCS 批量导出
-- Code Editor 风格 GEE JavaScript 本地运行
-- `ee` 统一 CLI
+- Code Editor 风格 GEE JavaScript 本地运行（`ee run`）
+- GEE JS 包管理（`packages/` + `ee add`）
+- 统一 CLI：`bin/ee`
 
 ## 常用命令
 
@@ -16,42 +17,56 @@ npm install
 npm run build
 npm run typecheck
 npm test
+npm run test:coverage
 
 node bin/ee help
-node bin/ee run script.js
-node bin/ee add user/pkg
+node bin/ee run script.js [more.js ...]   # 多脚本只鉴权一次
+node bin/ee add user/pkg                  # clone → packages/users/user/pkg
+node bin/ee config set packages ./packages
 node bin/ee submit --dry-run \
   --collection NASA/SMAP/SPL4SMGP/008 \
   --band sm_surface --scale 9000 --temporal daily_mean \
-  --bounds 114.2,30.4,114.6,30.7 \
+  --bounds 108.5,29.0,116.2,33.3 \
   --start 2024-07-01 --end 2024-07-02
 ```
+
+示例：`./examples/RunALL.sh`（或 `DRY_RUN=1`）。
 
 ## 代码组织
 
 ```
 src/
-  auth/     ee.js（唯一 EE 实例）+ auth.js（鉴权 / getInfo）
-  export/   batches / tasks / frame-collection / bounds
-  local/    local-host / gee-require / pkg-add / config
-  cli/      index（入口）/ args / export / local
-  index.ts  公共 API
+  ee.js / auth.js     唯一 EE 实例；鉴权 + getInfo
+  export/             batches / tasks / frame-collection / bounds
+  local/              local-host / gee-require / pkg-add / config
+  cli/
+    index.ts          入口；按命令 require 懒加载（help 不拉 EE）
+    args.ts           参数解析 + HELP
+    export.ts         submit / status / list / jobs / cancel
+    run.ts            run / repl
+    pkg.ts            config / add（轻量）
+  cli.ts              re-export → dist/cli.js（bin/ee 入口）
+  index.ts            公共 API
+packages/             GEE JS 包根（require 须带 .js）
+examples/             可运行示例
+test/                 离线单测
 ```
-
-- 禁止另行初始化 Earth Engine；统一 `src/auth/ee.js`
-- CLI 构建后由 `node bin/ee` 直接运行（`dist/cli.js` 兼容 re-export）
 
 ## 修改原则
 
 - TypeScript 严格类型；单引号、分号、2 空格、尾随逗号
-- 保持 CommonJS，CLI 构建后必须可由 `node` 直接运行
-- 禁止另行导入或初始化 Earth Engine；统一使用 `src/auth/ee.js`
-- `auth/auth.js` 不记录 token、refresh token 或私钥内容
-- 保持凭证优先级：private key → Earth Engine OAuth credentials
+- 保持 CommonJS；CLI 构建后须可由 `node bin/ee` 直接运行
+- 禁止另行导入或初始化 Earth Engine；统一 `src/ee.js`
+- `auth.js` 不记录 token、refresh token 或私钥内容
+- 凭证优先级：private key → Earth Engine OAuth credentials
 - 导出时间区间为闭区间；native 模式必须显式提供正 `stepHours`
 - `local-host` 修改后须验证内置 `Map` 构造器兼容性及全局清理
+- CLI 入口保持懒加载：`help` / `config` / `add` 不得静态依赖 EE
+- GEE 包 `require` 须带 `.js`（Code Editor 语法）；`users/x/y:mod.js` → `packages/users/x/y/mod.js`
+- packages 路径优先级：`--package-path` > `$GEE_JS_PATH` > config > `./packages`
 - 不把 server 数据源注册表引入本包；CLI 使用 collection/band/scale/temporal
 - 修改公共 API、CLI 参数或 job manifest 时同步更新 README 与测试
+- 不提交 `package-lock.json`（CI 用 `npm install`）
 
 ## 与 server 的边界
 

@@ -1,19 +1,29 @@
 #!/usr/bin/env node
 /**
  * CLI 入口：ee <command>
+ * 按命令懒加载，避免 help/config 拉起 earthengine。
  */
-import { HELP, parseArgs } from './args';
-import {
-  cmdCancel,
-  cmdJobs,
-  cmdList,
-  cmdStatus,
-  cmdSubmit,
-} from './export';
-import { cmdAdd, cmdConfig, cmdRun } from './local';
+import { HELP, parseArgs, type Cli } from './args';
+
+type Handler = (cli: Cli) => number | Promise<number>;
+
+/** CommonJS 懒加载（不触发 earthengine，直到真正用到） */
+function load(cmd: Cli['cmd']): Handler {
+  switch (cmd) {
+    case 'submit': return require('./export').cmdSubmit;
+    case 'status': return require('./export').cmdStatus;
+    case 'list': return require('./export').cmdList;
+    case 'jobs': return require('./export').cmdJobs;
+    case 'cancel': return require('./export').cmdCancel;
+    case 'run': return require('./run').cmdRun;
+    case 'add': return require('./pkg').cmdAdd;
+    case 'config': return require('./pkg').cmdConfig;
+    default: throw new Error(`unknown cmd: ${cmd}`);
+  }
+}
 
 export async function run(argv: string[] = process.argv.slice(2)): Promise<number> {
-  let cli;
+  let cli: Cli;
   try {
     cli = parseArgs(argv);
   } catch (e) {
@@ -22,17 +32,19 @@ export async function run(argv: string[] = process.argv.slice(2)): Promise<numbe
     return 2;
   }
 
-  switch (cli.cmd) {
-    case 'help': console.log(HELP); return 0;
-    case 'submit': return cmdSubmit(cli);
-    case 'status': return cmdStatus(cli);
-    case 'list': return cmdList(cli);
-    case 'jobs': return cmdJobs(cli);
-    case 'cancel': return cmdCancel(cli);
-    case 'run': return cmdRun(cli);
-    case 'add': return cmdAdd(cli);
-    case 'config': return cmdConfig(cli);
-    default: console.log(HELP); return 2;
+  if (cli.cmd === 'help') {
+    console.log(HELP);
+    return 0;
+  }
+
+  try {
+    return await load(cli.cmd)(cli);
+  } catch (e) {
+    if (e instanceof Error && e.message.startsWith('unknown cmd')) {
+      console.log(HELP);
+      return 2;
+    }
+    throw e;
   }
 }
 
