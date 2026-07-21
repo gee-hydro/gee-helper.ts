@@ -1,0 +1,44 @@
+{
+  "name": "@gee-hydro/gee-helper",
+  "version": "0.1.0",
+  "description": "GEE authentication, batch export, and local Code Editor runtime",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "gee-helper": "bin/gee-helper"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./auth": {
+      "types": "./dist/auth.d.ts",
+      "default": "./dist/auth.js"
+    },
+    "./export": {
+      "types": "./dist/export-batches.d.ts",
+      "default": "./dist/export-batches.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && tsx --test test/**/*.test.ts",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@google/earthengine": "^0.1.367",
+    "google-auth-library": "^7.14.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.4.5"
+  }
+}
