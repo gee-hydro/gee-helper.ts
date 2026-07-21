@@ -1,46 +1,43 @@
-# @gee-hydro/gee-helper
+# gee-helper
 
 [![CI](https://github.com/gee-hydro/gee-helper.ts/actions/workflows/CI.yml/badge.svg)](https://github.com/gee-hydro/gee-helper.ts/actions/workflows/CI.yml)
 [![Codecov](https://codecov.io/gh/gee-hydro/gee-helper.ts/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gee-hydro/gee-helper.ts/tree/main)
 
 GEE 鉴权、批量导出、Code Editor 风格 JS 本地运行与 GEE 脚本包管理。
-
-CLI 入口：`bin/ee`（`npx ee` / `node bin/ee`）。
+CLI 入口：`bin/ee`（`ee`）。
 
 ## 安装
-
 ```bash
 npm install && npm run build
 ```
 
-凭证（二选一，优先级 private key 优先）：
-
+**Auth**
 - `~/.config/earthengine/.private-key.json`
 - `earthengine authenticate`（OAuth）
 
 ## CLI
 
 ```bash
-node bin/ee help
+ee help
 ```
 
 ### 导出
 
 ```bash
 # 本地 GeoTIFF
-node bin/ee submit --destination local \
+ee submit --destination local \
   --collection NASA/SMAP/SPL4SMGP/008 --band sm_surface --scale 9000 \
   --temporal daily_mean --bounds 108.5,29.0,116.2,33.3 \
   --start 2024-07-01 --end 2024-07-02 --outdir ./cache/gee-batches
 
 # Drive / GCS
-node bin/ee submit --destination drive --folder gee-exports \
+ee submit --destination drive --folder gee-exports \
   --collection ... --band ... --scale 9000 --temporal daily_mean \
   --bounds ... --start ... --end ...
-node bin/ee status --job job_<id>
-node bin/ee cancel --job job_<id>
-node bin/ee list --limit 20
-node bin/ee jobs
+ee status --job job_<id>
+ee cancel --job job_<id>
+ee list --limit 20
+ee jobs
 ```
 
 必填：`--collection --band --scale --temporal --bounds --start --end`  
@@ -51,9 +48,9 @@ node bin/ee jobs
 ### 本地运行
 
 ```bash
-node bin/ee run script.js [more.js ...]   # 多脚本只鉴权一次
-node bin/ee run --repl
-node bin/ee run --package-path ./packages script.js
+ee run script.js [more.js ...]   # 多脚本只鉴权一次
+ee run --repl
+ee run --package-path ./packages script.js
 ```
 
 注入 `ee` / `print` / `Map` / `Export` / `Chart`，以及 Code Editor 风格 `require`（路径须带 `.js`）。
@@ -61,9 +58,9 @@ node bin/ee run --package-path ./packages script.js
 ### 包管理
 
 ```bash
-node bin/ee add user/pkg                  # → packages/users/user/pkg
-node bin/ee config show
-node bin/ee config set packages ./packages
+ee add user/pkg                  # → packages/users/user/pkg
+ee config show
+ee config set packages ./packages
 ```
 
 包路径优先级：`--package-path` > `$GEE_JS_PATH` > config > `./packages`  
@@ -77,18 +74,18 @@ import {
   exportBatches, submitExportTasks,
   runScript, setupLocalHost,
   addPackage, loadMergedConfig,
-} from '@gee-hydro/gee-helper';
+} from 'gee-helper';
 ```
 
-子路径：`@gee-hydro/gee-helper/auth`、`@gee-hydro/gee-helper/export`。
+子路径：`gee-helper/auth`、`gee-helper/export`。
 
 ## 示例
 
 见 [`examples/`](examples/README.md)。
 
 ```bash
-node bin/ee run examples/hello.js
-node bin/ee run examples/with-require.js examples/require-smap.js
+ee run examples/hello.js
+ee run examples/with-require.js examples/require-smap.js
 node examples/export.js          # 库 API 本地下载
 ./examples/RunALL.sh             # DRY_RUN=1 可只 dry-run
 ```
@@ -102,7 +99,7 @@ npm run test:coverage   # text + coverage/lcov.info
 
 ## 目录
 
-```
+```bash
 src/
   ee.js auth.js       唯一 EE 实例；鉴权
   export/             批量导出（local / Drive / GCS）

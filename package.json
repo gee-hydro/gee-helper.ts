@@ -1,5 +1,5 @@
 {
-  "name": "@gee-hydro/gee-helper",
+  "name": "gee-helper",
   "version": "0.1.0",
   "description": "GEE authentication, batch export, and local Code Editor runtime",
   "type": "commonjs",

@@ -2,7 +2,7 @@
 
 ## 项目定位
 
-`@gee-hydro/gee-helper` 是独立 CommonJS 包，提供：
+`gee-helper` 是独立 CommonJS 包，提供：
 
 - GEE service-account / OAuth 鉴权
 - 本地 GeoTIFF、Google Drive、GCS 批量导出
@@ -67,7 +67,3 @@ test/                 离线单测
 - 不把 server 数据源注册表引入本包；CLI 使用 collection/band/scale/temporal
 - 修改公共 API、CLI 参数或 job manifest 时同步更新 README 与测试
 - 不提交 `package-lock.json`（CI 用 `npm install`）
-
-## 与 server 的边界
-
-server 通过 `file:../gee-helper.ts` 引用本包，并保留 `--source` 数据源别名适配。不得反向依赖 `server/`，避免循环依赖。
