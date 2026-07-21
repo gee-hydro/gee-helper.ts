@@ -3,7 +3,8 @@
 import sys
 sys.path.insert(0, "./Project_Forecast/")
 
-from ee_export import ee_export_batch, ee_export_weeks
+from ee_export import ee_export_batch
+from ee_export_weeks import ee_export_weeks
 import ee
 ee.Initialize(opt_url="https://earthengine-highvolume.googleapis.com")
 
@@ -44,7 +45,10 @@ BANDS = [
 ]
 col = ee.ImageCollection("ECMWF/ERA5_LAND/HOURLY").select(BANDS)
 # ee_export_batch(col, region, date_beg, date_end, by=by, prefix=f"{Region}_ERA5L")
+
+# week = get_week() # date_beg, date_end, week
+
 ee_export_weeks(
-    col, region, date="2026-07-21", include_current_week=False,
+    col, region, date="2026-07-21", include_current_week=True,
     fout=f"OUTPUT/{Region}_ERA5L.nc",
 )

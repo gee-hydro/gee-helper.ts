@@ -1,5 +1,8 @@
 import os
+import ee
 import pandas as pd
+from ee_export import ee_export, grid_params
+
 
 def _remove_stale_weeks_files(fout, date_beg, date_end):
     """删除同一数据起点但结束时间更早的周文件。"""
@@ -55,6 +58,14 @@ def ee_export_weeks(
     ext = ext or ".nc"
     datasets = []
 
+    if kw.get("grid") is None:
+        kw["grid"] = grid_params(
+            region,
+            scale=kw.get("scale"),
+            crs=kw.get("crs", "EPSG:4326"),
+            ic=col,
+        )
+
     for week in weeks:
         filter_begin = pd.Timestamp(year=year, month=1, day=1, tz="UTC")
         filter_begin += pd.Timedelta(days=(week - 1) * 7)
@@ -71,12 +82,12 @@ def ee_export_weeks(
             date_beg = times.min().strftime("%Y%m%d%H")
             date_end = times.max().strftime("%Y%m%d%H")
             week_fout = (
-                f"{root}_{year}-weeks{week:02d}_" f"[{date_beg},{date_end}]{ext}"
+                f"{root}_{year}-week{week:02d}_" f"[{date_beg},{date_end}]{ext}"
             )
 
         ds = ee_export(col, region, filt, fout=week_fout, **kw)
         datasets.append(ds)
-        if week_fout and ds is not None:
+        if week_fout and os.path.isfile(week_fout):
             _remove_stale_weeks_files(week_fout, date_beg, date_end)
 
     return datasets

@@ -11,3 +11,4 @@ deprecated
 
 *.nc
 *.pyc
+.pi-subagents
