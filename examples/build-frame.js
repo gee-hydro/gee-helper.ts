@@ -8,8 +8,6 @@
  *     --outdir ./cache/examples/smap-custom \
  *     --user-script examples/build-frame.js
  */
-'use strict';
-
 /**
  * @param {{ collection: string, band: string, start: string, end: string }} p
  * @returns {ee.ImageCollection}

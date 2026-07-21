@@ -4,8 +4,6 @@
  *   ee examples/export.js
  *   DRY_RUN=1 ee examples/export.js
  */
-'use strict';
-
 const path = require('node:path');
 const { exportBatches } = require('../dist/export/batches');
 

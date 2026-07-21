@@ -6,3 +6,5 @@ package-lock.json
 
 *lock*
 cache
+.vscode
+deprecated

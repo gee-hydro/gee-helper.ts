@@ -49,7 +49,7 @@ ee config get packages
 | 文件 | 说明 |
 |------|------|
 | `hello.js` | 最小 print / ee |
-| `with-require.js` | Node 内置 + `require('region')` |
+| `with-require.js` | Node 内置 + `require('region.js')` |
 | `require-pkg.js` | 裸名 / 嵌套 / users:mod |
 | `require-smap.js` | 包 + 真实 SMAP 查询 |
 | `smap-mean.js` / `modis-ndvi.js` | 纯 Code Editor 风格 |
