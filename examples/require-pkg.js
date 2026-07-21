@@ -1,7 +1,7 @@
 /**
  * GEE 包 require 须带 .js 后缀（Code Editor 语法）。
  *
- *   node bin/ee run examples/require-pkg.js
+ * ee examples/require-pkg.js
  */
 var region = require('region.js');
 var mask = require('hydro/mask.js');

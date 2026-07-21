@@ -6,7 +6,7 @@
 
 - GEE service-account / OAuth 鉴权
 - 本地 GeoTIFF、Google Drive、GCS 批量导出
-- Code Editor 风格 GEE JavaScript 本地运行（`ee run`）
+- Code Editor 风格 GEE JavaScript 本地运行（`ee script.js`）
 - GEE JS 包管理（`packages/` + `ee add`）
 - 统一 CLI：`bin/ee`
 
@@ -20,7 +20,7 @@ npm test
 npm run test:coverage
 
 node bin/ee help
-node bin/ee run script.js [more.js ...]   # 多脚本只鉴权一次
+node bin/ee script.js [more.js ...]       # 多脚本只鉴权一次
 node bin/ee add user/pkg                  # clone → packages/users/user/pkg
 node bin/ee config set packages ./packages
 node bin/ee submit --dry-run \

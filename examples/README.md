@@ -7,21 +7,21 @@
 DRY_RUN=1 ./examples/RunALL.sh  # export 仅计划
 ```
 
-## Code Editor 风格（`ee run`）
+## Code Editor 风格（`ee script.js`）
 
 ```bash
 # 单脚本
-node bin/ee run examples/hello.js
-node bin/ee run examples/smap-mean.js
-node bin/ee run examples/modis-ndvi.js
+node bin/ee examples/hello.js
+node bin/ee examples/smap-mean.js
+node bin/ee examples/modis-ndvi.js
 
 # require：内置 / 相对路径 / packages 包
-node bin/ee run examples/with-require.js
-node bin/ee run examples/require-pkg.js
-node bin/ee run examples/require-smap.js
+node bin/ee examples/with-require.js
+node bin/ee examples/require-pkg.js
+node bin/ee examples/require-smap.js
 
 # 多脚本：只鉴权一次
-node bin/ee run \
+node bin/ee \
   examples/hello.js \
   examples/with-require.js \
   examples/require-pkg.js \

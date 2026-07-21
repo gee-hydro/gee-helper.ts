@@ -48,9 +48,9 @@ ee jobs
 ### 本地运行
 
 ```bash
-ee run script.js [more.js ...]   # 多脚本只鉴权一次
-ee run --repl
-ee run --package-path ./packages script.js
+ee script.js [more.js ...]       # 多脚本只鉴权一次
+ee --repl
+ee --package-path ./packages script.js
 ```
 
 注入 `ee` / `print` / `Map` / `Export` / `Chart`，以及 Code Editor 风格 `require`（路径须带 `.js`）。
@@ -84,8 +84,8 @@ import {
 见 [`examples/`](examples/README.md)。
 
 ```bash
-ee run examples/hello.js
-ee run examples/with-require.js examples/require-smap.js
+ee examples/hello.js
+ee examples/with-require.js examples/require-smap.js
 node examples/export.js          # 库 API 本地下载
 ./examples/RunALL.sh             # DRY_RUN=1 可只 dry-run
 ```

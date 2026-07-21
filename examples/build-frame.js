@@ -1,7 +1,7 @@
 /**
  * 自定义 buildFrame：供 CLI --user-script 使用。
  *
- *   node bin/ee submit --destination local \
+ * ee submit --destination local \
  *     --collection NASA/SMAP/SPL4SMGP/008 --band sm_surface --scale 9000 \
  *     --temporal daily_mean --bounds 108.5,29.0,116.2,33.3 \
  *     --start 2024-07-01 --end 2024-07-01 \

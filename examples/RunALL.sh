@@ -6,8 +6,8 @@ cd "$(dirname "$0")/.."
 echo '==> build'
 npm run build --silent
 
-echo '==> ee run (single auth)'
-node bin/ee run \
+echo '==> ee (single auth)'
+node bin/ee \
   examples/hello.js \
   examples/with-require.js \
   examples/require-pkg.js \

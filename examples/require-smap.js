@@ -1,7 +1,7 @@
 /**
  * require packages 包 + SMAP 区域均值。
  *
- *   node bin/ee run examples/require-smap.js
+ * ee examples/require-smap.js
  */
 var region = require('region.js');
 

@@ -23,7 +23,7 @@ function report(host: LocalHost): void {
 
 export async function cmdRun(cli: Cli): Promise<number> {
   if (!cli.scripts.length && !cli.repl) {
-    console.error('用法: ee run <script.js> [more.js ...]\n      ee run --repl');
+    console.error('用法: ee <script.js> [more.js ...]\n      ee --repl');
     return 2;
   }
   const t0 = Date.now();

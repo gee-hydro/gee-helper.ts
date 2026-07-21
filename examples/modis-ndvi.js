@@ -1,7 +1,7 @@
 /**
  * MODIS 16 日 NDVI：小区域均值。
  *
- *   node bin/ee run examples/modis-ndvi.js
+ * ee examples/modis-ndvi.js
  */
 var region = ee.Geometry.Rectangle([114.2, 30.4, 114.6, 30.7]);
 var img = ee.ImageCollection('MODIS/061/MOD13A2')

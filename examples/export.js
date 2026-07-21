@@ -1,8 +1,8 @@
 /**
  * 库 API：本地下载 1 天 SMAP GeoTIFF（小区域）。
  *
- *   node examples/export.js
- *   DRY_RUN=1 node examples/export.js
+ *   ee examples/export.js
+ *   DRY_RUN=1 ee examples/export.js
  */
 'use strict';
 

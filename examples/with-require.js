@@ -1,7 +1,7 @@
 /**
- * ee run + require：Node 内置 / 相对 JSON / 本地模块 / 包 dist。
+ * ee + require：Node 内置 / 相对 JSON / 本地模块 / 包 dist。
  *
- *   node bin/ee run examples/with-require.js
+ * ee examples/with-require.js
  */
 var path = require('node:path');
 var fs = require('node:fs');

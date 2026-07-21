@@ -72,9 +72,10 @@ export const HELP = `
 查询  ee status|cancel --job <id> | --task id1,id2
       ee list [--limit N]    ee jobs [--job-dir <dir>]
 
-运行  ee run <script.js> [more.js ...]
-      ee run --repl
-      ee run --package-path <dir> script.js
+运行  ee <script.js> [more.js ...]
+      ee --repl
+      ee --package-path <dir> script.js
+      ee run ...                 # 与上等价
 
 包管理  ee add <user>/<pkg>
         ee config show|get|set|path
@@ -109,6 +110,9 @@ export function parseArgs(argv: string[]): Cli {
   if (CMDS.has(head)) {
     cli.cmd = head === '-h' || head === '--help' ? 'help' : head as Cmd;
     argv = argv.slice(1);
+  } else {
+    // ee script.js [more.js ...]  — 无子命令时直接运行
+    cli.cmd = 'run';
   }
 
   if (cli.cmd === 'config') {
