@@ -1,14 +1,24 @@
-# @gee-hydro/gee-helper
+<h1>@gee-hydro/gee-helper</h1>
+
+[![CI](https://github.com/gee-hydro/gee-helper.ts/actions/workflows/CI.yml/badge.svg)](https://github.com/gee-hydro/gee-helper.ts/actions/workflows/CI.yml)
+[![Codecov](https://codecov.io/gh/gee-hydro/gee-helper.ts/branch/master/graph/badge.svg)](https://app.codecov.io/gh/gee-hydro/gee-helper.ts/tree/master)
 
 GEE 鉴权、批量导出、Code Editor 风格 JS 本地运行。
 
-## 安装
+## 1 安装
 
 ```bash
-cd gee-helper.ts && npm install && npm run build
+npm install && npm run build
 ```
 
-## CLI
+## 2 测试
+
+```bash
+npm test
+npm run test:coverage   # text + coverage/lcov.info + HTML
+```
+
+## 3 CLI
 
 ```bash
 # 导出到本地
@@ -28,7 +38,7 @@ npx gee-helper run script.js
 npx gee-helper run --repl
 ```
 
-## 库
+## 4 库
 
 ```ts
 import {
