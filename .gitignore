@@ -8,3 +8,6 @@ package-lock.json
 cache
 .vscode
 deprecated
+
+*.nc
+*.pyc
