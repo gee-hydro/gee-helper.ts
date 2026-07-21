@@ -4,7 +4,7 @@
 import { test, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import * as vm from 'node:vm';
-import { setupLocalHost } from '../src/local-host';
+import { runInScriptContext, setupLocalHost } from '../src/local-host';
 
 beforeEach(() => {
   // 清除宿主全局，避免上一次测试污染
@@ -132,6 +132,31 @@ test('vm.runInThisContext 下顶层 var/function 落到 globalThis（Code Editor
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const host: any = (globalThis as any)._host;
   assert.equal(host.print.length, 1);
+});
+
+test('runInScriptContext 注入 require/module/__dirname 且执行后还原', () => {
+  setupLocalHost({ echo: false });
+  const g = globalThis as Record<string, unknown>;
+  assert.equal(g.require, undefined);
+
+  runInScriptContext(`
+    var path = require('node:path');
+    var fs = require('node:fs');
+    print('base', path.basename(__filename));
+    print('hasRead', typeof fs.readFileSync);
+    print('dir', __dirname);
+    module.exports = { ok: true };
+  `, __filename);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const host: any = (globalThis as any)._host;
+  assert.equal(host.print.length, 3);
+  assert.match(host.print[0]!, /local-host\.test\.ts/);
+  assert.match(host.print[1]!, /hasRead function/);
+  assert.match(host.print[2]!, /dir /);
+  // 还原，不污染全局
+  assert.equal(g.require, undefined);
+  assert.equal(g.__filename, undefined);
 });
 
 test('多次调用 setupLocalHost 替换宿主（清空旧 capture）', () => {

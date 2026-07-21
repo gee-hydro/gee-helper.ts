@@ -79,8 +79,9 @@ const HELP = `用法: gee-helper <command> [options]
 status/cancel: --job <id> | --task id1,id2
 list: --limit N
 
-本地运行 GEE JS：
+本地运行 GEE JS（多脚本只鉴权一次）：
   gee-helper run script.js [more.js ...]
+  gee-helper run examples/*.js
   gee-helper run --repl
 `;
 
@@ -505,7 +506,7 @@ async function cmdRun(cli: Cli): Promise<number> {
   for (const s of cli.scripts) {
     try {
       console.log(`\n========== ${s} ==========`);
-      const host = await runScript(s);
+      const host = await runScript(s, { ready: true });
       report(host);
     } catch (e) {
       console.error(`脚本失败 (${s}):`, e instanceof Error ? e.message : String(e));
@@ -522,7 +523,7 @@ async function cmdRun(cli: Cli): Promise<number> {
     if (!line || line === 'quit' || line === 'exit') break;
     try {
       console.log(`\n========== ${line} ==========`);
-      const host = await runScript(line);
+      const host = await runScript(line, { ready: true });
       report(host);
     } catch (e) {
       console.error('脚本失败:', e instanceof Error ? e.message : String(e));

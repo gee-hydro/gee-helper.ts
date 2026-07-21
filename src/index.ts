@@ -35,10 +35,13 @@ export {
 } from './export-tasks';
 export {
   runCode,
+  runInScriptContext,
   runScript,
+  runScripts,
   setupLocalHost,
   type LayerSpec,
   type LocalHost,
   type LocalHostOptions,
+  type RunScriptOptions,
   type TaskSpec,
 } from './local-host';

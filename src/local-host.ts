@@ -2,6 +2,7 @@
  * GEE Code Editor 风格 JS 在本地 Node.js 运行的宿主垫片。
  */
 import * as fs from 'node:fs';
+import { createRequire } from 'node:module';
 import * as path from 'node:path';
 import * as vm from 'node:vm';
 import { ensureReady, getInfo } from './auth';
@@ -202,20 +203,71 @@ export function setupLocalHost(opts: LocalHostOptions = {}): LocalHost {
   return host;
 }
 
-export async function runScript(scriptPath: string, opts: LocalHostOptions = {}): Promise<LocalHost> {
-  const absPath = path.resolve(scriptPath);
-  const code = fs.readFileSync(absPath, 'utf8');
+type GlobalKey = 'require' | 'module' | 'exports' | '__filename' | '__dirname';
+
+/** 注入 Node 脚本全局（require/module/__dirname），执行后还原。 */
+export function runInScriptContext(code: string, filename: string): void {
+  const absPath = path.resolve(filename);
+  const g = globalThis as Record<string, unknown>;
+  const keys: GlobalKey[] = ['require', 'module', 'exports', '__filename', '__dirname'];
+  const prev: Partial<Record<GlobalKey, unknown>> = {};
+  for (const k of keys) prev[k] = g[k];
+
+  const mod: { exports: Record<string, unknown> } = { exports: {} };
+  g.require = createRequire(absPath);
+  g.module = mod;
+  g.exports = mod.exports;
+  g.__filename = absPath;
+  g.__dirname = path.dirname(absPath);
+
+  try {
+    vm.runInThisContext(code, { filename: absPath });
+    // 若脚本写了 module.exports，同步回 exports
+    g.exports = mod.exports;
+  } finally {
+    for (const k of keys) {
+      if (prev[k] === undefined) delete g[k];
+      else g[k] = prev[k];
+    }
+  }
+}
+
+export interface RunScriptOptions extends LocalHostOptions {
+  /** 跳过 ensureReady（批量跑时外层只鉴权一次） */
+  ready?: boolean;
+}
+
+async function runScriptBody(absPath: string, code: string, opts: RunScriptOptions): Promise<LocalHost> {
   const host = setupLocalHost(opts);
-  await ensureReady();
-  vm.runInThisContext(code, { filename: absPath });
+  if (!opts.ready) await ensureReady();
+  runInScriptContext(code, absPath);
   await Promise.all(host.pendingPrints.map((p) => p.catch(() => {})));
   return host;
 }
 
-export async function runCode(code: string, opts: LocalHostOptions = {}): Promise<LocalHost> {
-  const host = setupLocalHost(opts);
+export async function runScript(scriptPath: string, opts: RunScriptOptions = {}): Promise<LocalHost> {
+  const absPath = path.resolve(scriptPath);
+  return runScriptBody(absPath, fs.readFileSync(absPath, 'utf8'), opts);
+}
+
+/** 多脚本顺序执行，ensureReady 仅一次。 */
+export async function runScripts(
+  scriptPaths: string[],
+  opts: LocalHostOptions = {},
+): Promise<LocalHost[]> {
   await ensureReady();
-  vm.runInThisContext(code, { filename: '<inline>' });
+  const out: LocalHost[] = [];
+  for (const p of scriptPaths) {
+    out.push(await runScript(p, { ...opts, ready: true }));
+  }
+  return out;
+}
+
+export async function runCode(code: string, opts: RunScriptOptions = {}): Promise<LocalHost> {
+  const host = setupLocalHost(opts);
+  if (!opts.ready) await ensureReady();
+  // createRequire 需要真实路径锚点；inline 锚定 cwd
+  runInScriptContext(code, path.join(process.cwd(), '.<gee-inline>.js'));
   await Promise.all(host.pendingPrints.map((p) => p.catch(() => {})));
   return host;
 }
