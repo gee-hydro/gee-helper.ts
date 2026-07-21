@@ -1,7 +1,7 @@
 <h1>@gee-hydro/gee-helper</h1>
 
 [![CI](https://github.com/gee-hydro/gee-helper.ts/actions/workflows/CI.yml/badge.svg)](https://github.com/gee-hydro/gee-helper.ts/actions/workflows/CI.yml)
-[![Codecov](https://codecov.io/gh/gee-hydro/gee-helper.ts/branch/master/graph/badge.svg)](https://app.codecov.io/gh/gee-hydro/gee-helper.ts/tree/master)
+[![Codecov](https://codecov.io/gh/gee-hydro/gee-helper.ts/branch/main/graph/badge.svg)](https://app.codecov.io/gh/gee-hydro/gee-helper.ts/tree/main)
 
 GEE 鉴权、批量导出、Code Editor 风格 JS 本地运行。
 

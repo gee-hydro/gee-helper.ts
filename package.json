@@ -34,15 +34,23 @@
     "prepare": "npm run build"
   },
   "c8": {
-    "include": ["src/**/*"],
-    "exclude": ["src/**/*.d.ts", "test/**"],
-    "reporter": ["text", "lcov"],
+    "include": [
+      "src/**/*"
+    ],
+    "exclude": [
+      "src/**/*.d.ts",
+      "test/**"
+    ],
+    "reporter": [
+      "text",
+      "lcov"
+    ],
     "report-dir": "coverage",
     "all": true
   },
   "dependencies": {
-    "@google/earthengine": "^0.1.367",
-    "google-auth-library": "^7.14.1"
+    "@google/earthengine": "^1.7.36",
+    "google-auth-library": "^10.9.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.0",
