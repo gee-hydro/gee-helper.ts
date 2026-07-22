@@ -49,6 +49,7 @@ def grid_params(bbox, scale=None, crs="EPSG:4326", ic=None):
         if crs != projection["crs"]:
             raise ValueError("保留原生网格时，crs 必须与数据原始 CRS 相同")
         return _native_grid(bbox, projection)
+
     if isinstance(scale, (int, float)):
         s = abs(float(scale))
         scale = (s, -s)

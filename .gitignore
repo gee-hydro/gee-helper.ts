@@ -12,3 +12,5 @@ deprecated
 *.nc
 *.pyc
 .pi-subagents
+
+shp
