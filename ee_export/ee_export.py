@@ -12,7 +12,7 @@ _FREQ = {"year": "YS", "month": "MS"}
 
 def ee_export(
     col,
-    region,
+    bbox,
     filt,
     fout=None,
     overwrite=False,
@@ -33,7 +33,7 @@ def ee_export(
         os.makedirs(os.path.dirname(fout) or ".", exist_ok=True)
 
     if grid is None:
-        grid = grid_params(region, scale=scale, crs=crs, ic=ic)
+        grid = grid_params(bbox, scale=scale, crs=crs, ic=ic)
 
     try:
         # if verbose: print(f"Running: {fout}")
@@ -46,21 +46,21 @@ def ee_export(
     return ds
 
 
-def ee_export_year(col, region, year, fout=None, **kw):
+def ee_export_year(col, bbox, year, fout=None, **kw):
     filt = ee.Filter.calendarRange(year, year, "year")
-    return ee_export(col, region, filt, fout=fout, **kw)
+    return ee_export(col, bbox, filt, fout=fout, **kw)
 
 
-def ee_export_month(col, region, year, month, fout=None, **kw):
+def ee_export_month(col, bbox, year, month, fout=None, **kw):
     filt = ee.Filter.calendarRange(year, year, "year").And(
         ee.Filter.calendarRange(month, month, "month")
     )
-    return ee_export(col, region, filt, fout=fout, **kw)
+    return ee_export(col, bbox, filt, fout=fout, **kw)
 
 
 def ee_export_batch(
     col,
-    region,
+    bbox,
     date_beg,
     date_end,
     by="year",
@@ -78,7 +78,7 @@ def ee_export_batch(
 
     dates = pd.date_range(str(date_beg), str(date_end), freq=_FREQ[by])
     # 网格只算一次
-    grid = grid_params(region, scale=scale, crs=crs, ic=col)
+    grid = grid_params(bbox, scale=scale, crs=crs, ic=col)
 
     for d in dates:
         stamp = f"{d.year}{d.month:02d}" if by == "month" else f"{d.year}"
@@ -86,6 +86,6 @@ def ee_export_batch(
 
         kw = dict(fout=fout, overwrite=overwrite, grid=grid)
         if by == "year":
-            ee_export_year(col, region, d.year, **kw)
+            ee_export_year(col, bbox, d.year, **kw)
         else:
-            ee_export_month(col, region, d.year, d.month, **kw)
+            ee_export_month(col, bbox, d.year, d.month, **kw)

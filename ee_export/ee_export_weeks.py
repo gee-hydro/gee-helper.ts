@@ -11,6 +11,7 @@ def get_week():
     week = (date_end.dayofyear - 1) // 7 + 1
     date_beg = date_end.normalize() - pd.Timedelta(days=(date_end.dayofyear - 1) % 7)
     return {
+        "year": date_end.year,
         "date_beg": date_beg.strftime("%Y%m%d%H"),
         "date_end": date_end.strftime("%Y%m%d%H"),
         "week": week
@@ -39,7 +40,7 @@ def _remove_stale_weeks_files(fout, date_beg, date_end):
 
 def ee_export_weeks(
     col,
-    region,
+    bbox,
     date=None,
     weeks=None,
     year=None,
@@ -72,7 +73,7 @@ def ee_export_weeks(
 
     if kw.get("grid") is None:
         kw["grid"] = grid_params(
-            region,
+            bbox,
             scale=kw.get("scale"),
             crs=kw.get("crs", "EPSG:4326"),
             ic=col,
@@ -94,7 +95,7 @@ def ee_export_weeks(
         name = f"{prefix}_{year}-week{week:02d}_[{date_beg},{date_end}].nc"
         fout = os.path.join(outdir, name)
 
-        ds = ee_export(col, region, filt, fout=fout, **kw)
+        ds = ee_export(col, bbox, filt, fout=fout, **kw)
         datasets.append(ds)
         if os.path.isfile(fout):
             _remove_stale_weeks_files(fout, date_beg, date_end)
