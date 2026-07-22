@@ -13,7 +13,7 @@ earthengine authenticate
 
 ```python
 import ee
-from ee_export import ee_export_batch
+from ee_export import ee_export_batch, ee_export_weeks
 
 ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
 region = ee.Geometry.Rectangle(

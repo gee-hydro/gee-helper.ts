@@ -1,7 +1,20 @@
 import os
 import ee
 import pandas as pd
-from ee_export import ee_export, grid_params
+from .ee_export import ee_export
+from .grid import grid_params
+
+
+def get_week():
+    """返回当前 UTC 时间所在周的 date_beg、date_end、week。"""
+    date_end = pd.Timestamp.now(tz="UTC").floor("h")
+    week = (date_end.dayofyear - 1) // 7 + 1
+    date_beg = date_end.normalize() - pd.Timedelta(days=(date_end.dayofyear - 1) % 7)
+    return {
+        "date_beg": date_beg.strftime("%Y%m%d%H"),
+        "date_end": date_end.strftime("%Y%m%d%H"),
+        "week": week
+    }
 
 
 def _remove_stale_weeks_files(fout, date_beg, date_end):
@@ -31,7 +44,8 @@ def ee_export_weeks(
     weeks=None,
     year=None,
     include_current_week=True,
-    fout=None,
+    prefix="",
+    outdir="OUTPUT",
     **kw,
 ):
     """按年内连续 7 日周批量导出；weeks 支持 int 或可迭代对象。"""
@@ -54,8 +68,6 @@ def ee_export_weeks(
         raise ValueError(f"weeks must contain integers in 1..53, got {weeks!r}")
 
     year = int(year or date.year)
-    root, ext = os.path.splitext(fout or "")
-    ext = ext or ".nc"
     datasets = []
 
     if kw.get("grid") is None:
@@ -71,23 +83,20 @@ def ee_export_weeks(
         filter_begin += pd.Timedelta(days=(week - 1) * 7)
         filter_end = filter_begin + pd.Timedelta(days=7)
         filt = ee.Filter.date(filter_begin.isoformat(), filter_end.isoformat())
-        week_fout = None
+        values = col.filter(filt).aggregate_array("system:time_start").getInfo()
+        if not values:
+            print(f"skip {year}-weeks{week:02d}: no data")
+            continue
 
-        if fout:
-            values = col.filter(filt).aggregate_array("system:time_start").getInfo()
-            if not values:
-                print(f"skip {year}-weeks{week:02d}: no data")
-                continue
-            times = pd.to_datetime(values, unit="ms", utc=True)
-            date_beg = times.min().strftime("%Y%m%d%H")
-            date_end = times.max().strftime("%Y%m%d%H")
-            week_fout = (
-                f"{root}_{year}-week{week:02d}_" f"[{date_beg},{date_end}]{ext}"
-            )
+        times = pd.to_datetime(values, unit="ms", utc=True)
+        date_beg = times.min().strftime("%Y%m%d%H")
+        date_end = times.max().strftime("%Y%m%d%H")
+        name = f"{prefix}_{year}-week{week:02d}_[{date_beg},{date_end}].nc"
+        fout = os.path.join(outdir, name)
 
-        ds = ee_export(col, region, filt, fout=week_fout, **kw)
+        ds = ee_export(col, region, filt, fout=fout, **kw)
         datasets.append(ds)
-        if week_fout and os.path.isfile(week_fout):
-            _remove_stale_weeks_files(week_fout, date_beg, date_end)
+        if os.path.isfile(fout):
+            _remove_stale_weeks_files(fout, date_beg, date_end)
 
     return datasets
