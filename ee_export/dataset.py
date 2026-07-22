@@ -1,5 +1,7 @@
 """GEE 降水预报数据源及档案时间范围检查。"""
 
+import time
+
 import ee
 
 if __package__:
@@ -114,21 +116,22 @@ PRCP_SOURCES = [
 
 
 def source_date_ranges(sources=PRCP_SOURCES):
-    """一次请求获取所有数据源的 system:time_start 范围。"""
+    """逐源查询 system:time_start 范围，打印并计时。"""
     ranges = {}
     for source in sources:
         col = ee.ImageCollection(source["collection"])
         for field, value in source.get("filters", {}).items():
             col = col.filter(ee.Filter.eq(field, value))
-        ranges[source["id"]] = date_range(col)
-    return ee.Dictionary(ranges).getInfo()
 
+        t0 = time.perf_counter()
+        date_beg, date_end = ee.List(list(date_range(col))).getInfo()
+        dt = time.perf_counter() - t0
 
-def main():
-    ee.Initialize(opt_url="https://earthengine-highvolume.googleapis.com")
-    for source_id, dates in source_date_ranges().items():
-        print(f"{source_id:18s} {dates['date_beg']} -> {dates['date_end']}")
+        ranges[source["id"]] = (date_beg, date_end)
+        print(f"{source['id']:18s} {date_beg} -> {date_end}  ({dt:.2f}s)", flush=True)
+    return ranges
 
 
 if __name__ == "__main__":
-    main()
+    ee.Initialize(opt_url="https://earthengine-highvolume.googleapis.com")
+    source_date_ranges()

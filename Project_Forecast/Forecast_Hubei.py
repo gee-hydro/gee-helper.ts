@@ -1,19 +1,30 @@
-"""下载 dataset.ts 中登记的最新一期预报数据。"""
-
-import os
+# downloading speed: 1min per year
+# %%
 import sys
-
 sys.path.append("/mnt/z/GitHub/gee-hydro/gee-helper.ts")
 
+from ee_export import ee_export_batch, ee_export_weeks
 import ee
-from ee_export import ee_export, grid_params, PRCP_SOURCES
+ee.Initialize(opt_url="https://earthengine-highvolume.googleapis.com")
 
-BBOX = [70, 15, 140, 55]
-REGION = "China"
-OUTDIR = f"OUTPUT/{REGION}/forecast"
-OVERWRITE = False
+bbox = [109.4, 31.2, 111.6, 33.4]  # 十堰
+Region = "ShiYan"
 
+bbox = [108.0, 29.0, 116.5, 33.5]  # 湖北
+Region = "Hubei"
 
+# bbox = [108.0, 24.0, 115, 31]  # 湖南
+# Region = "HuNan"
+
+# outdir = f"OUTPUT/{Region}"
+outdir = f"OUTPUT/Forecast"
+date_beg = "2026-07-10 00:00:00"
+date_end = "2026-07-11 00:00:00"
+by = "day"
+
+kw = dict(bbox=bbox, date_beg=date_beg, date_end=date_end, by=by, outdir=outdir, overwrite=True)
+
+##
 def scale_bands(col, bands, scales):
     """按 dataset.ts 的 displayScale 转换单位，并保留影像属性。"""
     if not scales:
@@ -85,11 +96,7 @@ def export_source(source):
         )
 
 
-def main():
+if __name__ == "__main__":
     ee.Initialize(opt_url="https://earthengine-highvolume.googleapis.com")
     for source in PRCP_SOURCES:
         export_source(source)
-
-
-if __name__ == "__main__":
-    main()

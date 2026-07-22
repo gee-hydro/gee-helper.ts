@@ -14,3 +14,5 @@ deprecated
 .pi-subagents
 
 shp
+.ipynb_checkpoints
+*.ipynb

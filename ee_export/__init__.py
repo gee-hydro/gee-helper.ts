@@ -5,8 +5,7 @@ from .ee_export import ee_export, ee_export_batch, ee_export_month, ee_export_ye
 from .ee_export_weeks import ee_export_weeks, get_week
 
 from .dataset import PRCP_SOURCES, source_date_ranges
-from .ultilize import get_date_range
-
+from .ultilize import date_range, date_range_slow
 
 __all__ = [
     "PRCP_SOURCES",
@@ -15,7 +14,7 @@ __all__ = [
     "ee_export_month",
     "ee_export_year",
     "ee_export_weeks",
-    "get_date_range",
+    "date_range", "date_range_slow",
     "get_scale",
     "get_week",
     "grid_params",
