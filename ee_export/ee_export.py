@@ -1,10 +1,13 @@
 """xee 按年/月导出 ImageCollection → NetCDF（xee≥0.1）"""
 
 import os
+
 import ee
-import xee  # noqa: F401 — register xarray ee engine
-import xarray
 import pandas as pd
+import xarray
+import xee  # noqa: F401 — register xarray ee engine
+from dask.diagnostics import ProgressBar
+
 from .grid import grid_params
 
 _FREQ = {"year": "YS", "month": "MS"}
@@ -39,7 +42,8 @@ def ee_export(
         # if verbose: print(f"Running: {fout}")
         ds = xarray.open_dataset(ic, engine="ee", **grid)
         if fout:
-            ds.to_netcdf(fout)
+            with ProgressBar():
+                ds.to_netcdf(fout)
 
     except Exception as e:
         print(e)
