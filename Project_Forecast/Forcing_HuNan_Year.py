@@ -21,7 +21,7 @@ date_beg = "2015"
 date_end = "2026"
 by = "year"
 
-kw = dict(bbox=bbox, date_beg=date_beg, date_end=date_end, by=by, outdir=outdir, overwrite=True)
+kw = dict(bbox=bbox, date_beg=date_beg, date_end=date_end, by=by, outdir=outdir, overwrite=False)
 
 # %%
 # col = ee.ImageCollection("NASA/GPM_L3/IMERG_V07").select("precipitation")

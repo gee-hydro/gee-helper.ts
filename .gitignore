@@ -16,3 +16,5 @@ deprecated
 shp
 .ipynb_checkpoints
 *.ipynb
+
+*.tmp
