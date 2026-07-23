@@ -16,7 +16,7 @@ Region = "ShiYan"
 bbox = [108.0, 24.0, 115, 31]  # 湖南
 Region = "HuNan"
 
-outdir = f"OUTPUT/{Region}"
+outdir = f"/mnt/z/LocalEarthDataCube/RTFloods/{Region}"
 date_beg = "2015"
 date_end = "2026"
 by = "year"
